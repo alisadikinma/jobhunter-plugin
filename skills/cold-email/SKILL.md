@@ -1,6 +1,6 @@
 ---
 name: cold-email
-description: Draft an initial cold email plus two follow-up variants for an application, personalised against the company + variant + tailored CV context. Returns subject + body per email. Calls back to FastAPI via X-Callback-Secret. Invoked by the FastAPI subprocess spawner with --api-url, --api-token, --job-id.
+description: Draft an initial cold email plus two follow-up variants for an application, personalised against the company + variant + tailored CV context. ALSO push the initial draft into Gmail via the Gmail MCP server (mcp__claude_ai_Gmail__create_draft) so the operator can review + attach CV + send from the Gmail UI directly. Returns subject + body per email + Gmail draft IDs. Calls back to FastAPI via X-Callback-Secret. Invoked by the FastAPI subprocess spawner with --api-url, --api-token, --job-id.
 ---
 
 # `/cold-email` — draft 3-email sequence per application
@@ -52,7 +52,38 @@ No additional flags — the `reference_id` on the agent_job is the
 
 5. **Stream progress** after each draft.
 
-6. **Post completion**:
+6. **Push the initial draft into Gmail** via the Gmail MCP server.
+   Skip this step if `application.contact_email` is null/missing — log
+   `gmail_skipped: "no recipient (run /jobhunter:find-contact first)"`
+   in the result and continue with backend persistence only.
+
+   ```
+   tool: mcp__claude_ai_Gmail__create_draft
+   args: {
+     to: [{"email": "<application.contact_email>", "name": "<application.contact_name>"}],
+     subject: "<initial.subject>",
+     body: "<initial.body>",
+     # Optional CV attachment if you have the cv_id (the FastAPI
+     # backend's /api/cv/{id}/download/docx URL works in MCP if the
+     # Gmail server fetches via authenticated GET; if not, leave
+     # attachment to the operator).
+   }
+   ```
+
+   Capture the returned `draft.id` and the `https://mail.google.com/mail/u/0/#drafts/<id>`
+   URL so the operator can jump straight to the Gmail UI.
+
+   **Do NOT auto-send.** This skill always leaves a draft. The operator
+   reviews, attaches CV (if not auto-attached), and clicks Send manually.
+   Auto-send is out of scope by design — see `refs/refs-email.md` §
+   "no auto-send" for rationale.
+
+   If Gmail MCP isn't available in the runtime (e.g. running outside
+   Claude Code with a stripped MCP config), record
+   `gmail_drafts: []` and `gmail_status: "mcp_unavailable"` and continue
+   normally — backend dispatch still saves the draft to `email_drafts`.
+
+7. **Post completion**:
    ```
    PUT {api-url}/api/callbacks/complete/{job-id}
    Header: X-Callback-Secret: {api-token}
@@ -63,7 +94,11 @@ No additional flags — the `reference_id` on the agent_job is the
        "follow_up_1": {"subject": "...", "body": "..."},
        "follow_up_2": {"subject": "...", "body": "..."},
        "strategy": "vibe_coding / velocity-first",
-       "personalization_notes": [...]
+       "personalization_notes": [...],
+       "gmail_drafts": [
+         {"email_type": "initial", "draft_id": "<gmail-id>", "url": "https://mail.google.com/..."}
+       ],
+       "gmail_status": "drafted" | "mcp_unavailable" | "no_recipient" | "failed"
      }
    }
    ```
@@ -76,3 +111,7 @@ No additional flags — the `reference_id` on the agent_job is the
   `error_message: "insufficient JD content"`.
 - Master CV summary_variants[variant] missing → fail; Phase 8 seed
   didn't complete properly.
+- Gmail MCP `create_draft` rate-limited or auth-broken → record
+  `gmail_status: "failed"` with the error in `personalization_notes`
+  but DO complete the callback successfully — the body+subject still
+  flow into `email_drafts` table and the operator can paste manually.
