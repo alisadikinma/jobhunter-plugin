@@ -1,0 +1,20 @@
+{
+  "name": "jobhunter",
+  "description": "Claude skills for the JobHunter automated job-hunting pipeline — batch-score scraped jobs, tailor variant-specific CVs, and draft cold emails. Each skill calls back to a FastAPI backend via X-Callback-Secret-protected HTTP routes.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Ali Sadikin",
+    "url": "https://github.com/alisadikinma"
+  },
+  "homepage": "https://github.com/alisadikinma/jobhunter-plugin",
+  "repository": "https://github.com/alisadikinma/jobhunter-plugin",
+  "license": "MIT",
+  "keywords": [
+    "job-hunting",
+    "cv-tailoring",
+    "cold-email",
+    "automation",
+    "fastapi",
+    "claude-code"
+  ]
+}

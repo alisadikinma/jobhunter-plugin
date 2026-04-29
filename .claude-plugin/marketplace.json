@@ -1,0 +1,20 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "jobhunter",
+  "description": "Skills for the JobHunter automated job-hunting pipeline — batch-score, tailor CVs, draft cold emails. Designed to be invoked by a paired FastAPI backend (https://github.com/alisadikinma/jobhunter) via subprocess + HTTP callbacks.",
+  "owner": {
+    "name": "Ali Sadikin",
+    "url": "https://github.com/alisadikinma"
+  },
+  "plugins": [
+    {
+      "name": "jobhunter",
+      "description": "3 skills (job-score, cv-tailor, cold-email) + 3 reference docs (scoring rubric, CV variants, email cadence). Pairs with the JobHunter FastAPI backend.",
+      "version": "0.1.0",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/alisadikinma/jobhunter-plugin.git"
+      }
+    }
+  ]
+}
