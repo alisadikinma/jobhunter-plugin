@@ -9,8 +9,8 @@
   "plugins": [
     {
       "name": "jobhunter",
-      "description": "3 skills (job-score, cv-tailor, cold-email) + 3 reference docs (scoring rubric, CV variants, email cadence). Pairs with the JobHunter FastAPI backend.",
-      "version": "0.1.0",
+      "description": "5 skills (job-score, cv-tailor, cold-email, find-contact, scrape-company-careers) + 4 reference docs (scoring rubric, CV variants, email cadence, contact discovery). Pairs with the JobHunter FastAPI backend.",
+      "version": "0.2.0",
       "source": {
         "source": "url",
         "url": "https://github.com/alisadikinma/jobhunter-plugin.git"
