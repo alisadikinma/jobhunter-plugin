@@ -3,6 +3,17 @@
 Plugin that provides skills invoked by the FastAPI backend via
 `subprocess.Popen([CLAUDE_PATH, --plugin-path, <this dir>, <skill>, ...])`.
 
+## 🧠 Vault Context Link
+
+Skill library — dipakai oleh `D:\Projects\jobhunter` FastAPI backend.
+
+Pre-read kalau perlu konteks:
+- `20-Projects/jobhunter/README.md` — pipeline state, scoring rubric versions
+- `10-Identity/positioning.md` — Ali's USP (CV/email tone source of truth)
+- `10-Identity/ali.md` — voice (auto-loaded global)
+
+CV tailoring + cold email harus konsisten dengan positioning vault. JANGAN drift dari USP.
+
 ## Conventions
 
 ### Shared arguments
